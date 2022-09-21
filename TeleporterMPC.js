@@ -62,6 +62,9 @@ for (sm_index in signingMngrs){
      sm_managers.push(signingMngrs[sm_index]);
 }
 
+console.log('sm_managers', sm_managers);
+return;
+
 //var mpcHeader = "/MPC/multi-party-ecdsa/target/release/examples/";
 
 /* KeyStore file(s) for MPC */
@@ -135,7 +138,7 @@ app.get('/', function (req, res) {
      res.sendFile(path.join(__dirname,'./views/index.html'));
 });
 
-var port = process.env.PORT || 3200;
+var port = process.env.PORT || 6000; //3200;
 var server = app.listen(port, function () {
      var host = server.address().address;
      var port = server.address().port;
@@ -189,10 +192,6 @@ function checkStealthSig(evmTxHash){
 }
 
 
-/*
-async function temp(w3From, vault, txInfo, txProcMap){
-     return (await hashAndSignTx(w3From.utils.toWei(amt.toString()), w3From, vault.toString(), txInfo, txProcMap)); 
-}*/
 
 /*
  * Given parameters associated with the token burn, we validate and produce a signature entitling user to payout.
@@ -286,8 +285,9 @@ app.get('/api/v1/getsig/txid/:txid/fromNetId/:fromNetId/toNetIdHash/:toNetIdHash
           return;
      }
      
-
+     
      let fromNetArr = getNetworkAddresses(fromNetId, tokenName); 
+     console.log('fromNetArr:', fromNetArr);
      evmTxHash = web3.utils.soliditySha3(txid);
      let txidNonce = (stealthMode)? (evmTxHash + nonce):(txid + nonce); 
      let txStub = (stealthMode) ? evmTxHash : txid;
@@ -542,10 +542,6 @@ function getSettings(){
      return obj;  
 }
 
-/*function findSetting(name, obj){
-     let objVal = obj[name];
-     return objVal;
-}*/
 
 /* return signed hashed transaction info */
 function hashAndSignTx(amt, web3, vault, txInfo, txProcMap){
@@ -564,6 +560,12 @@ function hashAndSignTx(amt, web3, vault, txInfo, txProcMap){
                var hash = web3.utils.soliditySha3(message);
                console.log('Hash:', hash);
                var sig = await signMsg(hash, web3, txInfo, txProcMap);
+                
+               // Handle odd length sigs
+               if ((sig.length() % 2) != 0){
+                    sig = '0x0'+sig.split("0x")[1];
+               }
+
                console.log('sig2:', sig);
                console.log('MPC Address:', web3.eth.accounts.recover(hash, sig));
                resolve(sig);
@@ -594,6 +596,9 @@ async function signMsg(message, web3, txInfo, txProcMap){ //will become MPC
                     //console.log('address:', addr);
                     
                     resolve(mpcSig);
+               }).catch(e => {
+                    console.log('Error:', e);
+                    reject('signClientError:', e);
                });
                
           }
