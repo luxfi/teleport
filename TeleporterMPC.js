@@ -62,9 +62,6 @@ for (sm_index in signingMngrs){
      sm_managers.push(signingMngrs[sm_index]);
 }
 
-console.log('sm_managers', sm_managers);
-return;
-
 //var mpcHeader = "/MPC/multi-party-ecdsa/target/release/examples/";
 
 /* KeyStore file(s) for MPC */
@@ -113,15 +110,15 @@ function getNetworkAddresses(toNetId, tokenName){
      
      web3 = getWeb3ForId(toNetId);
      let chainName = networkName[toNetId];
-
-     arr.push(settingsMap.get(tokenName.toString())[chainName], web3, list[chainName]); //, tele);
+     console.log('tokenName.toString():', tokenName.toString(),'chainName:', chainName);
+     arr.push(settingsMap.get(tokenName.toString())[chainName], web3, list[chainName]);
      return arr;
 }
 
 var Exp = /((^[0-9]+[a-z]+)|(^[a-z]+[0-9]+))+[0-9a-z]+$/i;
 
 /* Database stuff */
-var connStr = 'mongodb://teleportUser:'+DB+'@localhost:27017/Teleport';
+var connStr = 'mongodb://teleportUserMPC:'+DB+'@localhost:27017/TeleportMPC';
 
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
@@ -177,16 +174,19 @@ function checkStealthSig(evmTxHash){
                     if (result && result != null) {
                          console.log('Err ... entry already exists:', result);
                          resolve([true, result]);
+                         return;
                     }
                     else { // Not a replay
                          console.log('Entry does not exist...yet');
                          resolve([false, result]);
+                         return;
                     }
                });
           }
           catch(e){
                console.log('Error:', e);
                reject([false]);
+               return;
           }
      });
 }
@@ -236,6 +236,7 @@ app.get('/api/v1/getsig/txid/:txid/fromNetId/:fromNetId/toNetIdHash/:toNetIdHash
      }
 
      var fromNetId = req.params.fromNetId.trim();
+     console.log('fromNetId:', fromNetId);
      if (!fromNetId){
           output = "NullFromNetIDError: No from netId sent.";
           res.send(output);
@@ -257,7 +258,7 @@ app.get('/api/v1/getsig/txid/:txid/fromNetId/:fromNetId/toNetIdHash/:toNetIdHash
      }
 
      var tokenAddrHash = req.params.tokenAddrHash.trim();
-
+     console.log('TokenAddrHash:', tokenAddrHash);
      if (!tokenAddrHash){
           output = "NullTokenAddressHashError: No token address hash sent.";
           res.send(output);
@@ -295,17 +296,6 @@ app.get('/api/v1/getsig/txid/:txid/fromNetId/:fromNetId/toNetIdHash/:toNetIdHash
      console.log('txidNonce:', txidNonce);
      console.log('txProcMapX:', txProcMap.get(txidNonce.toString()), 'TX MAP:', txProcMap);
 
-     /*let w3From = fromNetArr[1];
-     amt = 3;
-     vault = 'true';
-     console.log(w3From.utils.toWei('3'), w3From, 'true', txInfo, txProcMap);
-     sig = temp(w3From, vault, txInfo, txProcMap);
-     console.log(sig);
-     output = JSON.stringify({fromTokenContractAddress: fromNetArr[0], from: toTargetAddrHash, tokenAmt: amt, signature: sig, hashedTxId: txid, tokenAddrHash: tokenAddrHash, vault: vault});
-     console.log(output);
-     res.send(output);
-     return;*/
-
      if (!txProcMap.get(txidNonce.toString())){
 
           if (fromNetArr.length !== 3) {
@@ -322,7 +312,7 @@ app.get('/api/v1/getsig/txid/:txid/fromNetId/:fromNetId/toNetIdHash/:toNetIdHash
           
           /* Check that it's not a replay transaction */
           TeleportData.findOne({
-               txId: txInfo[0]
+               txId: txInfo[0] //evmTxHash //
           }, async function (err, result) {
                console.log("Find Result:", result, err);
      
@@ -399,24 +389,24 @@ app.get('/api/v1/getsig/txid/:txid/fromNetId/:fromNetId/toNetIdHash/:toNetIdHash
                                              txInfo[0] = evmTxHash;
      
                                              sig = await hashAndSignTx(w3From.utils.toWei(amt.toString()), w3From, vault.toString(), txInfo, txProcMap); 
-                                             console.log('Signature:', sig);
+                                             console.log('Signature1:', sig);
                                         }
                                         else {
                                              sig = await hashAndSignTx(w3From.utils.toWei(amt.toString()), w3From, vault.toString(), txInfo, txProcMap); 
-                                             console.log('Signature:', sig);
+                                             console.log('Signature2:', sig);
                                         }
      
                                         // Check for replays on stealth mode - using only the sig.
                                         if (stealthMode){
-                                             var stealthFound = checkStealthSig(evmTxHash);//==>txidNonce); //see if saved already 
+                                             var stealthFound = await checkStealthSig(evmTxHash);//==>txidNonce); //see if saved already 
                                              console.log('stealthFound[1]',stealthFound[1]);
                                              r = null; 
 
                                              if (stealthFound[1]){
                                                   r = (stealthFound[1]._doc) ? stealthFound[1]._doc : stealthFound[1];
                                              }
-
-                                             if (stealthFound[0]& r) {
+                                             console.log('stealthFound[0]:', stealthFound[0], 'r:', r)
+                                             if (stealthFound[0] & r != null) {
                                              //if (stealthFound[0] && stealthFound[1]._doc) {
                                                   sig = r.sig;
                                                   evmTxHash = r.hashedTxId;
@@ -436,7 +426,7 @@ app.get('/api/v1/getsig/txid/:txid/fromNetId/:fromNetId/toNetIdHash/:toNetIdHash
                                         if (!stealthMode){
                                              teleportData.chainType = ct;
                                              teleportData.txId = txid;
-                                             teleportData.amount = amt;
+                                             teleportData.amount = amt.toFixed(10);
                                              teleportData.evmSenderAddress = from; //EVM sender address
                                         }
                                         else {
@@ -560,19 +550,21 @@ function hashAndSignTx(amt, web3, vault, txInfo, txProcMap){
                var hash = web3.utils.soliditySha3(message);
                console.log('Hash:', hash);
                var sig = await signMsg(hash, web3, txInfo, txProcMap);
-                
-               // Handle odd length sigs
-               if ((sig.length() % 2) != 0){
-                    sig = '0x0'+sig.split("0x")[1];
-               }
-
                console.log('sig2:', sig);
                console.log('MPC Address:', web3.eth.accounts.recover(hash, sig));
                resolve(sig);
+               return;
           }
           catch(err){
-               console.log(err);
-               reject(err);
+               if (err.toString().includes('invalid point')){
+                    hashAndSignTx(amt, web3, vault, txInfo, txProcMap);
+               }
+               else {
+                    console.log(err);
+                    reject(err);
+                    return;
+               }
+            
           }
      });
 }
@@ -596,15 +588,18 @@ async function signMsg(message, web3, txInfo, txProcMap){ //will become MPC
                     //console.log('address:', addr);
                     
                     resolve(mpcSig);
+                    return (mpcSig);
                }).catch(e => {
                     console.log('Error:', e);
                     reject('signClientError:', e);
+                    return;
                });
                
           }
           catch (err){
                console.log('Error:',err);
                reject(err);
+               return;
           }
      });
 
@@ -668,24 +663,27 @@ async function signClient(i, msgHash, txInfo, txProcMap){
                                               console.log('txProcMap3',txProcMap);
                                               resolve(signClient(i, msgHash, txInfo, txProcMap));
                                               //reject('SignerKill: Try transaction again with new nonce.');
+                                              return;
                                         }
           
                                    }
                                    else { //Loop SM Managers
                                         i = 0;  
-                                        signClient(i, msgHash, txInfo, txProcMap);
+                                        return signClient(i, msgHash, txInfo, txProcMap);
                                    }
           
                               }
                               else {
                                    console.log('upStderr:',upStderr);
                                    reject('SignerDeadError2:',upStderr);
+                                   return;
                               }
 
                          }
                          catch (e) {
                               console.log('SignerDeadError3:', e);
                               reject('SignerDeadError3:',e);
+                              return;
                          }
                }
                else {
@@ -713,7 +711,6 @@ async function signClient(i, msgHash, txInfo, txProcMap){
                                         reject('SigFail:', output);
                                    });*/
                                    
-                    
                                    //Invoke client signer.
                                    console.log('sm_managers[i]', sm_managers[i], i);
                                    cmd = '/gg18_sign_client '+ sm_managers[i] + ' ' + keyStore + ' ' + msgHash;
@@ -730,13 +727,25 @@ async function signClient(i, msgHash, txInfo, txProcMap){
                                              s = sig[1].replace(/["]/g,'').trim();
                                              v = (Number(sig[2].replace(/["]/g,''))===0)?'1b':'1c';                              
                                              finalSig = '0x'+r+s+v;
-                                             console.log('Signature:',finalSig);
+                                                  
+                                             if (finalSig.length < 132){
+                                                  throw new Error('elements in xs are not pairwise distinct');
+                                             }
+
+                                             // Handle odd length sigs
+                                             if ((finalSig.length % 2) != 0){
+                                                 finalSig = '0x0'+finalSig.split("0x")[1];
+                                             }
+
+                                             console.log('Signature3:',finalSig);
                                              resolve(finalSig);
+                                             return (finalSig);
                                         }
                                    }
                                    else {
                                         console.log('stderr:', stderr);
                                         reject('SignerFailError1:', stderr);
+                                        return;
                                    }
 
                               }
@@ -745,28 +754,34 @@ async function signClient(i, msgHash, txInfo, txProcMap){
 
                                    if (e.toString().includes("elements in xs are not pairwise distinct")){
                                         await sleep(2000);
+                                        txProcMap.set(txidNonce.toString(), false);
                                         signClient(i, msgHash, txInfo, txProcMap);
                                    }  
                                    else {
                                         reject('SignerFailError2: '+e);
+                                        return;
                                    }
                               }
 
                          }
                          else {
-                              reject('AlreadyProcessingTransactionError: Nonce too low. Try again.');
+                              console.log('Nonce too low. Try again.');
+                              throw new Error('AlreadyProcessingTransactionError: Nonce too low. Try again.');
                          }
                       
                     }
                     catch (e){
                          console.log('SignerFailError3:',e);
                          reject('SignerFailError3:', e);
+                         return;
                     }
 
                }
+               return;
           }, function (err) {
                console.log(err.stack || err);
                reject(err.stack);
+               return;
           })
           
      });
@@ -803,7 +818,8 @@ async function killSigner(signerProc){
  * For multichain transactions
  */
 async function getEVMTx(txh, w3From){ //, fromBridgeContract){
-     console.log('In getEVMTx', 'txh:', txh);
+     console.log('In getEVMTx', 'txid:', txh);
+     console.log('From Chain:', w3From);
      try {
           txh = txh.toString();
           let transaction = await w3From.eth.getTransaction(txh);
@@ -814,7 +830,9 @@ async function getEVMTx(txh, w3From){ //, fromBridgeContract){
           if (transaction != null && transactionReceipt != null && transaction != undefined && transactionReceipt != undefined ){
                console.log('Transaction:',transaction, 'Transaction Receipt:', transactionReceipt);
                transaction = Object.assign(transaction, transactionReceipt);
-               var addrTo = transactionReceipt.logs[0].address; 
+               if (transactionReceipt.logs.length === 0 ) 
+                    throw new Error('getEVMTXError: there was a problem with the transaction receipt.');
+               var addrTo = (transactionReceipt.logs.length > 0) ? transactionReceipt.logs[0].address : transactionReceipt.to; 
                var tokenAmt = (parseInt(transaction.input.slice(74,138), 16) / (10**18));
                tokenAmt -= (tokenAmt * .008);
                var contractTo = transaction.to;
@@ -837,14 +855,9 @@ async function getEVMTx(txh, w3From){ //, fromBridgeContract){
                     }
                    
                }
-               
-               if (transactionReceipt.logs[0].data == '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'){
-                    amount = 0;
-               }
+          
 
-               else {
-                    amount = Number(transactionReceipt.logs[0].data);
-               }
+               amount = ((transactionReceipt.logs.length > 0 ) && (transactionReceipt.logs[0].data == '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')) ? 0 : Number(transactionReceipt.logs[0].data);
                amount =  w3From.utils.fromWei((amount.toLocaleString('fullwide', {useGrouping:false})).toString());
                console.log("Transaction to (Smart Contract):",contractTo);
                console.log("Transaction from:", from);
