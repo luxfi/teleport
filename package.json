@@ -1,5 +1,5 @@
 {
-  "name": "lux-bridge",
+  "name": "@luxdefi/bridge",
   "version": "1.0.0",
   "description": "",
   "main": "blockListener.js",
