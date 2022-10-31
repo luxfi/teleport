@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /*
  * Teleport Bridge 
  * Copyright (c) Artrepreneur1
