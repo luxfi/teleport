@@ -1,8 +1,8 @@
-# Lux Bridge
-Lux Bridge is comprised of Multi-Party Compute (MPC) nodes which perform oracle operations and MPC signature on the bridge.
+# LUX Bridge
+LUX Bridge is comprised of Multi-Party Compute (MPC) nodes which perform oracle operations and MPC signature on the bridge.
 
 ## Bridge Features
-Lux Bridge has the following features:
+LUX Bridge has the following features:
 
 1. Decentralized oracle operations using MPC
 2. Decentralized permissioning using MPC
