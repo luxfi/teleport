@@ -103,5 +103,5 @@ npm run node
 
 The [BridgeDapp](https://github.com/luxdefi/bridge-dapp) can be used to interact with this MPC network.
 
+## License
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
