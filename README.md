@@ -1,5 +1,3 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 # Lux Bridge
 Lux Bridge is comprised of Multi-Party Compute (MPC) nodes which perform oracle operations and MPC signature on the bridge.
 
@@ -104,3 +102,6 @@ npm run node
 ```
 
 The [BridgeDapp](https://github.com/luxdefi/bridge-dapp) can be used to interact with this MPC network.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
