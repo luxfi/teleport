@@ -1,8 +1,8 @@
-# LUX Bridge
-LUX Bridge is comprised of Multi-Party Compute (MPC) nodes which perform oracle operations and MPC signature on the bridge.
+# LUX Teleport
+LUX Teleport is comprised of Multi-Party Compute (MPC) nodes which perform oracle operations and MPC signature on the bridge.
 
 ## Bridge Features
-LUX Bridge has the following features:
+LUX Teleport has the following features:
 
 1. Decentralized oracle operations using MPC
 2. Decentralized permissioning using MPC
@@ -12,7 +12,7 @@ LUX Bridge has the following features:
 Clone the repository on all signers.
 
 ```
-git clone https://github.com/luxdefi/bridge
+git clone https://github.com/luxdefi/teleport
 ```
 
 Install rust and mongoDB on all nodes.
@@ -24,7 +24,7 @@ chmod 777 install.sh
 ./install.sh
 ```
 
-Set up mongodb. Then set up the Teleport data store.
+Set up mongoDB and the Teleport data store.
 
 ```
 pico /etc/mongod.conf
@@ -93,15 +93,15 @@ share of each party.
 Add these your your SettingsMPC.json under "KeyStore"
 
 Setup an endpoint with NGINX to run your node.
-Adding additional bridge networks are created by updating SettingsMPC.json. This repo will update Settings.json with new chains.
+Adding additional teleport networks are created by updating SettingsMPC.json. This repo will update Settings.json with new chains.
 
-Run the Lux Bridge MPC node with:
+Run the Lux Teleport  node with:
 
 ```
 npm run node
 ```
 
-The [BridgeDapp](https://github.com/luxdefi/bridge-dapp) can be used to interact with this MPC network.
+The [Teleport App](https://github.com/luxdefi/teleport-app) can be used to interact with this MPC network.
 
 ## License
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
