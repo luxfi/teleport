@@ -101,4 +101,11 @@ Run the Lux Teleport  node with:
 npm run node
 ```
 
+<<<<<<< HEAD
 The [Teleport App](https://github.com/luxdefi/teleport-app) can be used to interact with this MPC network.
+
+## License
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+=======
+The [BridgeDapp](https://github.com/luxdefi/bridge-dapp) can be used to interact with this MPC network.
+>>>>>>> c531d40 (Update License)
