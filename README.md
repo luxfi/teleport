@@ -1,8 +1,8 @@
-# LUX Teleport
-LUX Teleport is comprised of Multi-Party Compute (MPC) nodes which perform oracle operations and MPC signature on the bridge.
+# Lux Teleport
+Lux Teleport Protocol is comprised of Multi-Party Compute (MPC) nodes which perform oracle operations and MPC signature for the cross-chain bridge.
 
-## Bridge Features
-LUX Teleport has the following features:
+## Features
+Lux Teleport has the following features:
 
 1. Decentralized oracle operations using MPC
 2. Decentralized permissioning using MPC
