@@ -1,5 +1,5 @@
-# Lux Teleport
-Lux Teleport Protocol is comprised of Multi-Party Compute (MPC) nodes which perform oracle operations and MPC signature for the cross-chain bridge.
+# teleport
+Lux Teleport Protocol is comprised of Multi-Party Compute (MPC) nodes which perform oracle operations and MPC signature on the bridge.
 
 ## Features
 Lux Teleport has the following features:
@@ -12,7 +12,7 @@ Lux Teleport has the following features:
 Clone the repository on all signers.
 
 ```
-git clone https://github.com/luxdefi/teleport
+git clone https://github.com/luxfi/teleport
 ```
 
 Install rust and mongoDB on all nodes.
@@ -95,10 +95,10 @@ Add these your your SettingsMPC.json under "KeyStore"
 Setup an endpoint with NGINX to run your node.
 Adding additional teleport networks are created by updating SettingsMPC.json. This repo will update Settings.json with new chains.
 
-Run the Lux Teleport  node with:
+Run the Lux Teleport node with:
 
 ```
 npm run node
 ```
 
-The [Teleport App](https://github.com/luxdefi/teleport-app) can be used to interact with this MPC network.
+The [Teleport App](https://github.com/luxfi/teleport-app) can be used to interact with this MPC network.

@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "downlevelIteration": true,
+    "incremental": true,
+    "baseUrl": "src"
+  },
+  "include": [
+    "next-env.d.ts",
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/animation/index.js",
+    "src/pages/_error.js",
+    "src/pages/_error.ts",
+    "src/lib/gtag.js",
+    "src/mock/faq.js"
+  ],
+  "exclude": ["node_modules"]
+}

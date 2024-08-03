@@ -1,0 +1,103 @@
+.RMM__close-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  cursor: pointer;
+  height: 56px;
+  width: 56px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  border: none;
+  text-indent: 100%;
+  overflow: hidden;
+  color: transparent;
+  white-space: nowrap;
+  -webkit-transition: opacity 0.365s, -webkit-transform 0.365s;
+  transition: opacity 0.365s, -webkit-transform 0.365s;
+  transition: transform 0.365s, opacity 0.365s;
+  transition: transform 0.365s, opacity 0.365s, -webkit-transform 0.365s;
+  z-index: 12;
+  -webkit-transform: scale(0);
+  transform: scale(0);
+  opacity: 0;
+}
+.RMM__close-button::before,
+.RMM__close-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 2px;
+  width: 24px;
+  background: #fff;
+}
+.RMM__close-button::before {
+  -webkit-transform: translate(-50%) rotate(45deg);
+  transform: translate(-50%) rotate(45deg);
+}
+.RMM__close-button::after {
+  -webkit-transform: translate(-50%) rotate(-45deg);
+  transform: translate(-50%) rotate(-45deg);
+}
+.RMM__close-button:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+.RMM__close-button--is-active {
+  -webkit-transform: scale(1);
+  transform: scale(1);
+  opacity: 1;
+}
+
+.RMM__container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  /* z-index: 1; */
+}
+.RMM__container--is-active {
+  pointer-events: initial;
+  opacity: 1;
+  visibility: visible;
+}
+
+.RMM__body {
+  position: relative;
+  height: 100%;
+  overflow: auto;
+  padding: 6rem 15%;
+  z-index: 9;
+  opacity: 0;
+  -webkit-transition: opacity 0.2s;
+  transition: opacity 0.2s;
+}
+.RMM__body--is-active {
+  opacity: 1;
+}
+.RMM__body--no-padding {
+  padding: 0;
+}
+
+.RMM__placeholder {
+  position: fixed;
+  top: 0;
+  left: 0;
+  -webkit-transition-property: opacity, -webkit-transform;
+  transition-property: opacity, -webkit-transform;
+  transition-property: transform, opacity;
+  transition-property: transform, opacity, -webkit-transform;
+  -webkit-transition-duration: 0.365s;
+  transition-duration: 0.365s;
+}
+
+@media only screen and (max-width: 480px) {
+  .RMM__body {
+    padding: 6rem 3%;
+  }
+}
+
+/*# sourceMappingURL=ReactMorphingModal.css.map */

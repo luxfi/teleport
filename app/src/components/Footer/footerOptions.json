@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "title": "Important Links",
+      "options": [
+        {
+          "sub_title": "Contact Us",
+          "link": "https://www.spacecoinproject.com/contact-us",
+          "pdf": false
+        },
+        {
+          "sub_title": "FAQs",
+          "link": "https://www.spacecoinproject.com/faqs",
+          "pdf": false
+        },
+        {
+          "sub_title": "Whitepaper",
+          "link": "/pdfs/whitepaper.pdf",
+          "pdf": true
+        }
+      ]
+    }
+  ]
+}
