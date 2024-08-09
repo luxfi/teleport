@@ -1,4 +1,5 @@
 {
+	"name": "@luxbridge/contracts",
 	"devDependencies": {
 		"@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
 		"@nomicfoundation/hardhat-ethers": "^3.0.0",
@@ -22,6 +23,7 @@
 		"typescript": ">=4.5.0"
 	},
 	"dependencies": {
-		"@openzeppelin/contracts": "^5.0.2"
+		"@openzeppelin/contracts": "^5.0.2",
+		"dotenv": "^16.4.5"
 	}
 }
